@@ -55,8 +55,15 @@ static Future<File> writeCounter(String bytes, String name) async {
 
       // Ensure that the existing content is not empty
       if (existingContent.isNotEmpty) {
+        // Remove the closing brace '}' to append new content
+        existingContent = existingContent.substring(0, existingContent.length - 1);
+
         // Append a comma before adding new content
         existingContent += ',';
+
+        if (bytes.startsWith('{')) {
+          bytes = bytes.substring(1);
+        }
       }
 
       // Append the new content to the existing content
@@ -73,7 +80,6 @@ static Future<File> writeCounter(String bytes, String name) async {
     throw e; // Rethrow the error for handling in the caller
   }
 }
-
 
   static Future<void> removeElement(String category, String workout, String filename) async {
     try {
@@ -114,7 +120,7 @@ static Future<File> writeCounter(String bytes, String name) async {
     }
   }
 
-  static Future<int> readKeys(String filename) async {
+ static Future<List<String>> readKeys(String filename) async {
     try {
       final File file = await _getWorkoutFile(filename);
       String content = await file.readAsString();
@@ -122,12 +128,14 @@ static Future<File> writeCounter(String bytes, String name) async {
       // Parse the content as JSON-like structure
       Map<String, dynamic> data = json.decode('$content');
 
-      // Return the count of workout titles
-      return data.keys.length;
+      List<String> keys = data.keys.toList();
+
+      return keys;
 
     } catch (e) {
       print('Error reading workouts keys: $e');
-      return 0; // Return 0 in case of error
+      List<String> nullKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+      return nullKeys;
     }
   }
   

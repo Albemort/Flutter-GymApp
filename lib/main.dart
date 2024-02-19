@@ -21,7 +21,24 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late Future<List<String>> keysFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    keysFuture = _readKeysFromFile();
+  }
+
+  Future<List<String>> _readKeysFromFile() async {
+    return await FileStorage.readKeys("workouts.txt");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,18 +91,26 @@ class MyHomePage extends StatelessWidget {
           },
         ),
       ),
-      body: GridView.builder(
+      body: FutureBuilder<List<String>>(
+        future: keysFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            List<String> keys = snapshot.data!;
+            return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),
-              itemCount: 10, // You can set it according to your workouts list length
+              itemCount: keys.length,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
                     // Implement logic to show popup for custom weight and sets
-                    FileStorage.readKeys("workouts.txt");
                   },
                   child: Card(
                     child: Center(
@@ -94,11 +119,13 @@ class MyHomePage extends StatelessWidget {
                   ),
                 );
               },
-            ),
-        backgroundColor: Color.fromARGB(255, 216, 216, 216),
+            );
+          }
+        },
+      ),
+      backgroundColor: Color.fromARGB(255, 216, 216, 216),
     );
   }
 }
-
 
 

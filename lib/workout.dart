@@ -28,7 +28,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
 }
 
 Future<void> _displayTextInputDialog(BuildContext context) async {
-  Map<String, dynamic> myWorkouts = {};
   List<TextEditingController> _controllers = [];
   int maxFields = 10;
 
@@ -98,18 +97,28 @@ Future<void> _displayTextInputDialog(BuildContext context) async {
                 onPressed: () {
                   Map<String, dynamic> workoutWhole = {};
                   String workoutTitle = _titleController.text; 
+                  Map<String, dynamic> myWorkouts = {};
 
                   for (int i = 0; i < _controllers.length; i++) {
-                    String workoutName = 'Workout ${i + 1}';
-                    String workoutText = _controllers[i].text;
-                    print('$workoutName: $workoutText');
+                      String workoutName = 'Workout ${i + 1}';
+                      String workoutText = _controllers[i].text;
+                      print('$workoutName: $workoutText');
 
-            
-                    // Assign workoutText to the workoutName key in the inner map
-                    workoutWhole = {workoutName: workoutText};
+                      // Assign workoutText to the workoutName key in the inner map
+                      workoutWhole[workoutName] = workoutText;
                   }
-                  
-                  myWorkouts[workoutTitle] = {workoutWhole};
+
+                  // Check if the workoutTitle already exists
+                  if (myWorkouts.containsKey(workoutTitle)) {
+                      // Append the workoutWhole map to the existing list of workouts
+                      myWorkouts[workoutTitle].add(workoutWhole);
+                  } else {
+                      // Create a new list and add the workoutWhole map
+                      myWorkouts[workoutTitle] = [workoutWhole];
+                  }
+
+                  print(myWorkouts);
+
                   // Convert myWorkouts map to JSON format
                   String jsonContent = json.encode(myWorkouts);
 
