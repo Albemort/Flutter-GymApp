@@ -21,7 +21,7 @@ class FileStorage {
     } 
   
     final exPath = _directory.path; 
-    print("Saved Path: $exPath"); 
+    //print("Saved Path: $exPath"); 
     await Directory(exPath).create(recursive: true); 
     return exPath; 
   } 
@@ -81,21 +81,18 @@ static Future<File> writeCounter(String bytes, String name) async {
   }
 }
 
-  static Future<void> removeElement(String category, String workout, String filename) async {
+  static Future<void> removeElement(String key, String filename) async {
     try {
       final File file = await _getWorkoutFile(filename);
       String content = await file.readAsString();
 
       // Parse the content as JSON-like structure
-      Map<String, dynamic> data = json.decode('{$content}');
+      Map<String, dynamic> data = json.decode(content);
 
       // Remove the workout entry
-      if (data.containsKey(category)) {
-        Map<String, dynamic> categoryData = data[category];
-        categoryData.remove(workout);
-        if (categoryData.isEmpty) {
-          data.remove(category);
-        }
+      if (data.containsKey(key)) {
+        print("removing: $key");
+        data.remove(key);
       }
 
       // Write the updated contents back to the file
@@ -105,7 +102,7 @@ static Future<File> writeCounter(String bytes, String name) async {
     }
   }
 
-  static Future<void> readFile(String filename) async {
+  static Future<Map<String, dynamic>> readFile(String filename) async {
     try {
       final File file = await _getWorkoutFile(filename);
       String content = await file.readAsString();
@@ -113,10 +110,14 @@ static Future<File> writeCounter(String bytes, String name) async {
       // Parse the content as JSON-like structure
       Map<String, dynamic> data = json.decode('$content');
 
-      print(data);
+      //print(data);
+
+      return data;
 
     } catch (e) {
       print('Error reading workouts: $e');
+      Map<String, dynamic> data2 = {"Error":[{"No workouts yet :(":""}]};
+      return data2;
     }
   }
 
@@ -134,7 +135,7 @@ static Future<File> writeCounter(String bytes, String name) async {
 
     } catch (e) {
       print('Error reading workouts keys: $e');
-      List<String> nullKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+      List<String> nullKeys = [];
       return nullKeys;
     }
   }
