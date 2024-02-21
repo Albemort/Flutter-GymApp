@@ -18,6 +18,25 @@ with app.app_context():
    db.create_all()
 
 
+def get_data():
+   return_data = {}
+   exercises = Database.query.all()
+   for e in exercises:
+      exercise_data = {
+         'exercise': e.exercise,
+         'weight': e.weight,
+         'sets': e.sets,
+         'reps': e.reps
+      }
+      return_data[e.id] = exercise_data
+    
+   return return_data
+
+@app.route('/', methods=['GET'])
+def index():
+   return 'Server is running.'
+
+
 @app.route('/api/exercises', methods=['GET','POST'])
 def result():
    if request.method == 'POST':
@@ -39,10 +58,11 @@ def result():
       except Exception as e:
          print(f"Error occured inserting data to db: {e}")
          return jsonify({'error': 'Failed to add data'}), 400
-
-
+      
+   elif request.method == 'GET':
+      return jsonify(get_data()), 200
 
 
 
 if __name__ == '__main__':
-   app.run(host="localhost", port=3000)
+   app.run()
