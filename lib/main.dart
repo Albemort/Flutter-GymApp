@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'workout.dart';
 import 'filestorage.dart';
+import 'history.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -18,6 +19,7 @@ class MainApp extends StatelessWidget {
       routes: {
         '/home': (context) => MyHomePage(),
         '/workouts': (context) => WorkoutPage(),
+        '/history': (context) => HistoryPage(),
       },
     );
   }
@@ -81,6 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Workouts"),
               value: 2,
             ),
+            PopupMenuItem(
+              child: Text("History"),
+              value: 3,
+            ),
           ],
           onSelected: (value) {
             // Handle menu item selection here.
@@ -93,6 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Handle menu item 2
                 Navigator.pushNamed(context, '/workouts');
                 break;
+              case 3:
+                // Handle menu item 2
+                Navigator.pushNamed(context, '/history');
+                break;              
             }
           },
         ),
@@ -360,7 +370,7 @@ Future<void> weightInputDialog(BuildContext context, dynamic exercise) async {
 }
 
 Future<void> sendDataToServer(dynamic e, double w, int s, int r) async {
-  const String apiUrl = 'http://localhost:3000/api/exercises';
+  const String apiUrl = 'https://gymapp-hb.azurewebsites.net/api/exercises';
 
   final vastaus = await http.post(
     Uri.parse(apiUrl),

@@ -21,7 +21,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Workouts'),
+        title: Text('Workouts'),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
